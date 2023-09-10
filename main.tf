@@ -38,3 +38,12 @@ resource "aws_security_group" "SG" {
         cidr_blocks = ["0.0.0.0/0"]
     }
 }
+terraform {
+  backend "s3" {
+    bucket         = "your-terraform-state-bucket"
+    key            = "terraform.tfstate"
+    region         = "us-east-1"
+    encrypt        = true
+    dynamodb_table = "your-terraform-lock-table" # Replace with your DynamoDB table name
+  }
+}	
