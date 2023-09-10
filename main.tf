@@ -6,20 +6,28 @@ terraform {
     }
   }
 }
-
+provider "aws" {
+  region     = "us-west-2"
+  access_key = var.access_key
+  secret_key = var.secret_key
+}
 
 resource "aws_vpc" "my-vpc" {
-    name = "myvpc"  # Enclose names in double quotes
-    cidr_block = "10.0.0.0/16"
-    enable_dns_hostnames = true
-    enable_dns_support = true
+  cidr_block            = "10.0.0.0/16"
+  enable_dns_hostnames  = true
+  enable_dns_support    = true
+
+  tags = {
+    Name = "myvpc"  # Replace with your desired VPC name
+  }
 }
 
 resource "aws_subnet" "subnet" {
-  name = "my-subnet"  # Enclose names in double quotes
   vpc_id = aws_vpc.my-vpc.id
-  availability_zone = "us-east-2a"
   cidr_block = "10.0.0.0/24"  # Specify the CIDR block as a string
+  tags = {
+    Name = "mysubnet"  # Replace with your desired VPC name
+  }
 }
 
 resource "aws_security_group" "SG" {
@@ -38,12 +46,3 @@ resource "aws_security_group" "SG" {
         cidr_blocks = ["0.0.0.0/0"]
     }
 }
-terraform {
-  backend "s3" {
-    bucket         = "your-terraform-state-bucket"
-    key            = "terraform.tfstate"
-    region         = "us-east-1"
-    encrypt        = true
-    dynamodb_table = "your-terraform-lock-table" # Replace with your DynamoDB table name
-  }
-}	
